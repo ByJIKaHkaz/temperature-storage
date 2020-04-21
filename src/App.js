@@ -6,6 +6,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import _ from 'lodash';
 
 import './App.css';
 
@@ -20,8 +21,8 @@ class App extends Component {
       precipitations: null,
       activeFilter: 0,
       dates: [],
-      dateFrom: '1881-01-01',
-      dateTo: '2006-12-31'
+      dateFrom: '1881',
+      dateTo: '2006'
     };
 
     this.fetchPrec = this.fetchPrec.bind(this);
@@ -32,18 +33,19 @@ class App extends Component {
   componentWillMount(){
     this.fetchTemp();
     this.fetchPrec();
-    this.setState({dates: this.getDates()});
+    const dates = this.getDates();
+    this.setState({dates: dates, dateFrom: _.first(dates), dateTo: _.last(dates)});
   }
 
-  fetchTemp() {
-    return fetch('http://x933313j.bget.ru/temperature.json')
+  async fetchTemp() {
+    return await fetch('http://x933313j.bget.ru/temperature.json')
         .then(response => response.json())
         .then(result => this.setState({temperatures: result}))
         .catch(e => console.log(e));
   }
 
-  fetchPrec() {
-    return fetch('http://x933313j.bget.ru/precipitation.json')
+  async fetchPrec() {
+    return await fetch('http://x933313j.bget.ru/precipitation.json')
         .then(response => response.json())
         .then(result => this.setState({precipitations: result}))
         .catch(e => console.log(e));
@@ -51,11 +53,19 @@ class App extends Component {
 
   getDates() {
     const { temperatures } = this.state;
-    if (temperatures !== null)
-      return temperatures.map( item => {
-        return item.t;
-      })
-    else return [];
+
+    if (temperatures === null) return [];
+    const date1 = temperatures[0].t.substr(0,4);
+    const date2 = _.last(temperatures).t.substr(0,4);
+
+    const length = parseInt(date2) - parseInt(date1);
+    let dates = [];
+
+    for(let i = 0; i <= length; i++) {
+      dates.push(parseInt(date1) + i);
+    }
+
+    return dates;
   }
 
   onChangeFilter(filterNumber) {

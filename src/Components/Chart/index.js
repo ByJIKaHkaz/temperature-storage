@@ -10,12 +10,30 @@ export default class Chart extends PureComponent {
 
     render() {
         const { data, dateTo, dateFrom } = this.props;
-        const newData = _.filter(data, function(o) { return o.t <= dateTo && o.t >= dateFrom; });
+        if (!data) return []
+        let year = parseInt(_.first(data).t.substr(0,4));
+        let count = 0;
+        let value = 0;
+        const newData = data.map(item => {
+            if (parseInt(item.t.substr(0,4)) === year && item !== _.last(data)){
+              count += 1;
+              value += item.v;
+              return null;
+            }
+            else {
+              count = 1;
+              value = item.v;
+              const result = { t: year, v: value / count }
+              year = year + 1;
+              return result
+            }
+        });
+        const filteredData = _.filter(_.compact(newData), function(o) { return o.t <= dateTo && o.t >= dateFrom; });
         return (
             <LineChart
                 width={1000}
                 height={300}
-                data={newData}
+                data={filteredData}
             >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="t" />
