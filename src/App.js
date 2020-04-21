@@ -33,14 +33,12 @@ class App extends Component {
   componentWillMount(){
     this.fetchTemp();
     this.fetchPrec();
-    const dates = this.getDates();
-    this.setState({dates: dates, dateFrom: _.first(dates), dateTo: _.last(dates)});
   }
 
   async fetchTemp() {
     return await fetch('http://x933313j.bget.ru/temperature.json')
         .then(response => response.json())
-        .then(result => this.setState({temperatures: result}))
+        .then(result => this.setData(result))
         .catch(e => console.log(e));
   }
 
@@ -51,9 +49,12 @@ class App extends Component {
         .catch(e => console.log(e));
   };
 
-  getDates() {
-    const { temperatures } = this.state;
+  setData(temp) {
+    const dates = this.getDates(temp);
+    this.setState({temperatures: temp, dates: dates, dateFrom: _.first(dates), dateTo: _.last(dates)});
+  }
 
+  getDates(temperatures) {
     if (temperatures === null) return [];
     const date1 = temperatures[0].t.substr(0,4);
     const date2 = _.last(temperatures).t.substr(0,4);
