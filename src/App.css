@@ -1,0 +1,35 @@
+.App {
+  text-align: center;
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+  padding-top: 100px;
+}
+
+.main__sidebar {
+  display: flex;
+  flex-direction: column;
+}
+
+.main__chart {
+  display: flex;
+  flex-direction: column;
+  padding-left: 50px;
+}
+
+.main__chart__body {
+  display: flex;
+  padding-top: 50px;
+}
+
+.main__filter {
+  display: flex;
+  height: 20px;
+  justify-content: space-evenly;
+}
+
+.main__filter__item {
+  width: 120px;
+}
